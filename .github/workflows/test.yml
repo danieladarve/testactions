@@ -1,0 +1,111 @@
+name: Feature, Bug, Hotfix Tests
+
+on:
+  push:
+    branches:
+      - feature/*
+      - hotfix/*
+      - bugfix/*
+      - fix/*
+jobs:
+  laravel_tests:
+    name: PHPUnit & PHPCS Tests
+    runs-on: ubuntu-18.04
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: snooze
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: snooze_crm_test
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get install --yes postgresql-client
+      - name: Setup database
+        run: |
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'DROP SCHEMA public CASCADE;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'CREATE SCHEMA public;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO snooze;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO public;'
+        env:
+          # postgress password is required; alternatively, you can run:
+          # `PGPASSWORD=postgres_password psql ...`
+          PGPASSWORD: password
+#      - name: Setup PHP, Composer and php extensions
+#        uses: shivammathur/setup-php@v2
+#        with:
+#          php-version: '7.0'
+#          extensions: bcmath, calendar, exif, gd, zip, iconv, imap, ldap, pdo_pgsql, mbstring, soap, xml, dom, fileinfo, intl, php-pgsql, php-gd, php-xml
+#          tools: composer:v1
+#      - name: Get composer Cache Directory
+#        id: composer-cache
+#        run: |
+#          echo "::set-output name=dir::$(composer config cache-files-dir)"
+#      - uses: actions/cache@v2
+#        id: actions-cache
+#        with:
+#          path: ${{ steps.composer-cache.outputs.dir }}
+#          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-composer-
+#      - name: Cache PHP dependencies
+#        uses: actions/cache@v2
+#        id: vendor-cache
+#        with:
+#          path: vendor
+#          key: ${{ runner.OS }}-build-${{ hashFiles('**/composer.lock') }}
+#      - name: Install Composer dependencies
+#        if: steps.vendor-cache.outputs.cache-hit != 'true'
+#        run: |
+#          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+#      - name: Change Directory Permissions
+#        run: chmod -R 777 storage bootstrap/cache
+#      - name: Show DIR location
+#        run: pwd
+#      - name: Show PHP version
+#        run: php --version
+#      - name: Execute tests (Unit and Feature tests) via PHPUnit
+#        env:
+#          APP_ENV: ${{ secrets.APP_ENV }}
+#          APP_DEBUG: ${{ secrets.APP_DEBUG }}
+#          APP_KEY: ${{ secrets.APP_KEY }}
+#          APP_URL: ${{ secrets.APP_URL }}
+#          DB_CONNECTION: pgsql
+#          DB_PORT: 55432
+#          DB_USERNAME: snooze
+#          DB_PASSWORD: password
+#          DB_DATABASE: snooze_crm_test
+#          CACHE_DRIVER: ${{ secrets.CACHE_DRIVER }}
+#          SESSION_DRIVER: ${{ secrets.SESSION_DRIVER }}
+#          QUEUE_DRIVER: ${{ secrets.QUEUE_DRIVER }}
+#          KONG_TOKEN: ${{ secrets.KONG_TOKEN }}
+#          KONG_VERIFICATION: ${{ secrets.KONG_VERIFICATION }}
+#          SUPPORT_EMAIL: ${{ secrets.SUPPORT_EMAIL }}
+#          SUPPORT_NAME: ${{ secrets.SUPPORT_NAME }}
+#          CUSTOMER_SERVICE_EMAIL: ${{ secrets.CUSTOMER_SERVICE_EMAIL }}
+#          CUSTOMER_SERVICE_NAME: ${{ secrets.CUSTOMER_SERVICE_NAME }}
+#          SNOOZE_ONLINE_EMAIL: ${{ secrets.SNOOZE_ONLINE_EMAIL }}
+#          SNOOZE_ONLINE_NAME: ${{ secrets.SNOOZE_ONLINE_NAME }}
+#          FINANCE_EMAIL: ${{ secrets.FINANCE_EMAIL }}
+#          FINANCE_NAME: ${{ secrets.FINANCE_NAME }}
+#          SALES_EMAIL: ${{ secrets.SALES_EMAIL }}
+#          SALES_NAME: ${{ secrets.SALES_NAME }}
+#          ORDERS_EMAIL: ${{ secrets.ORDERS_EMAIL }}
+#          ORDERS_NAME: ${{ secrets.ORDERS_NAME }}
+#          BUGSNAG_API_KEY: ${{ secrets.BUGSNAG_API_KEY }}
+#          SENDGRID_SANDBOX: ${{ secrets.SENDGRID_SANDBOX }}
+#          ENABLE_SENDGRID: ${{ secrets.ENABLE_SENDGRID }}
+#          ENABLE_MARKETO: ${{ secrets.ENABLE_MARKETO }}
+#        run: |
+#          vendor/bin/phpunit
+
