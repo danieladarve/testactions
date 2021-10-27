@@ -34,7 +34,6 @@ jobs:
           sudo apt-get install --yes postgresql-client
       - name: Setup database
         run: |
-          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'SELECT * FROM accounts;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'DROP SCHEMA public CASCADE;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'DROP SCHEMA public CASCADE;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'CREATE SCHEMA public;'
