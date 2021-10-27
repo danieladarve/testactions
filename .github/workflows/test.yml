@@ -34,8 +34,11 @@ jobs:
           sudo apt-get install --yes postgresql-client
       - name: Setup database
         run: |
-          psql -h localhost -U snooze -p 55432 -tc 'DROP DATABASE [IF EXISTS] snooze_crm_test;'
-          psql -h localhost -U snooze -p 55432 -tc "SELECT 'CREATE DATABASE snooze_crm_test' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'snooze_crm_test')"
+          psql -h localhost -U snooze -p 55432 -tc 'DROP DATABASE IF EXISTS snooze_crm_test;'
+          psql -h localhost -U snooze -p 55432 -tc 'CREATE DATABASE snooze_crm_test;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'CREATE SCHEMA public;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO snooze;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO public;'
           psql -h localhost -U snooze -p 55432 -tc 'SELECT * FROM pg_database;'
         env:
           PGPASSWORD: password
