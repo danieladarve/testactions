@@ -34,8 +34,7 @@ jobs:
           sudo apt-get install --yes postgresql-client
       - name: Setup database
         run: |
-          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'DROP OWNED BY name [, ...] [ CASCADE | RESTRICT ];'
-          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'DROP SCHEMA IF EXISTS public CASCADE;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'select 'drop table if exists "' || tablename || '" cascade;' from pg_tables;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'CREATE SCHEMA public;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO snooze;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO public;'
