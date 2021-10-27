@@ -34,8 +34,7 @@ jobs:
           sudo apt-get install --yes postgresql-client
       - name: Setup database
         run: |
-          psql -h localhost -U snooze -p 55432 -tc 'DROP DATABASE IF EXISTS snooze_crm_test;'
-          psql -h localhost -U snooze -p 55432 -tc 'CREATE DATABASE snooze_crm_test;'
+          psql -h localhost -U snooze -p 55432 -c 'DROP DATABASE IF EXISTS snooze_crm_test;'
         env:
           PGPASSWORD: password
 #      - name: Setup PHP, Composer and php extensions
