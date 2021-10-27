@@ -34,10 +34,15 @@ jobs:
           sudo apt-get install --yes postgresql-client
       - name: Setup database
         run: |
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'SELECT * FROM accounts;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'DROP SCHEMA public CASCADE;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'DROP SCHEMA public CASCADE;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'CREATE SCHEMA public;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO snooze;'
           psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'GRANT ALL ON SCHEMA public TO public;'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'CREATE TABLE accounts ( test VARCHAR ( 50 ) UNIQUE NOT NULL );'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'INSERT INTO accounts (test) VALUES('testing${{ github.run_id }}-${{ github.run_number }}');'
+          psql -h localhost -d snooze_crm_test -U snooze -p 55432 -c 'SELECT * FROM accounts;'
         env:
           # postgress password is required; alternatively, you can run:
           # `PGPASSWORD=postgres_password psql ...`
